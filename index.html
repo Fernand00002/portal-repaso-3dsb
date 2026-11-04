@@ -42,7 +42,7 @@
         header {
             border-bottom: 1px solid var(--border);
             padding-bottom: 30px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
@@ -75,6 +75,33 @@
             font-weight: 300;
         }
 
+        /* Botones de Filtro */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            color: var(--text);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--text-heading);
+            color: var(--bg);
+            border-color: var(--text-heading);
+        }
+
         /* Grid Dinámico de Módulos */
         .grid {
             display: grid;
@@ -90,7 +117,6 @@
             padding: 24px;
             position: relative;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: pointer;
             overflow: hidden;
         }
 
@@ -115,15 +141,16 @@
 
         .card h3 {
             font-family: var(--font-gothic);
-            font-size: 20px;
+            font-size: 18px;
             color: var(--text-heading);
             margin-bottom: 10px;
             letter-spacing: 1px;
+            line-height: 1.4;
         }
 
         .card .docente {
             font-family: var(--font-mono);
-            font-size: 12px;
+            font-size: 11px;
             color: #64748b;
             text-transform: uppercase;
             margin-bottom: 12px;
@@ -174,8 +201,15 @@
                 <h1>Portal de Repaso</h1>
                 <p class="lead">Sistema de Archivos y Módulos Académicos // 3.º DS B</p>
             </div>
-            <div class="badge">SEC // v0.4-GOTHIC</div>
+            <div class="badge">SEC // v0.5-FILTERS</div>
         </header>
+
+        <!-- Botones de Filtrado por Docente -->
+        <div class="filters">
+            <button class="filter-btn active" data-filter="todos">Ver Todos</button>
+            <button class="filter-btn" data-filter="Arcides Canales">Arcides Canales</button>
+            <button class="filter-btn" data-filter="Javier Mineros">Javier Mineros</button>
+        </div>
 
         <!-- Contenedor dinámico controlado por JavaScript -->
         <div id="lista-modulos" class="grid"></div>
@@ -185,14 +219,21 @@
         </footer>
     </div>
 
-    <!-- Enlazamos los datos y la lógica de pintado -->
+    <!-- Enlazamos los datos y la lógica de filtrado -->
     <script src="data/modulos.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const contenedor = document.getElementById("lista-modulos");
+            const botonesFiltro = document.querySelectorAll(".filter-btn");
             
-            if (contenedor && typeof modulosData !== "undefined") {
-                contenedor.innerHTML = modulosData.map(mod => `
+            function renderModulos(filtro = "todos") {
+                if (!contenedor || typeof modulosData === "undefined") return;
+
+                const modulosFiltrados = filtro === "todos" 
+                    ? modulosData 
+                    : modulosData.filter(mod => mod.docente === filtro);
+
+                contenedor.innerHTML = modulosFiltrados.map(mod => `
                     <div class="card">
                         <span class="docente">Docente: ${mod.docente}</span>
                         <h3>${mod.nombre}</h3>
@@ -203,6 +244,19 @@
                     </div>
                 `).join("");
             }
+
+            // Render inicial al cargar la página
+            renderModulos("todos");
+
+            // Eventos para los botones de filtro
+            botonesFiltro.forEach(boton => {
+                boton.addEventListener("click", () => {
+                    botonesFiltro.forEach(b => b.classList.remove("active"));
+                    boton.classList.add("active");
+                    const filtroSeleccionado = boton.getAttribute("data-filter");
+                    renderModulos(filtroSeleccionado);
+                });
+            });
         });
     </script>
 </body>
