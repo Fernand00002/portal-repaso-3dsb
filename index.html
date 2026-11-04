@@ -4,9 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HUB Repaso 3.º DS</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #070a15; color: #e8edfb; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 20px; }
+        .card { background: #0f1630; border: 1px solid #222c55; border-radius: 10px; padding: 18px; }
+        .card h3 { color: #22d3ee; margin-top: 0; }
+        p { color: #9ba7ce; font-size: 14px; }
+    </style>
 </head>
 <body>
     <h1>Mi Portal de Repaso - 3.º DS B</h1>
-    <p>Primeros cimientos del HUB del año.</p>
+    <p>Módulos del año cargados dinámicamente:</p>
+
+    <!-- Contenedor donde JavaScript pintará los módulos -->
+    <div id="lista-modulos" class="grid"></div>
+
+    <!-- Enlazamos el archivo de datos y el script -->
+    <script src="data/modulos.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const contenedor = document.getElementById("lista-modulos");
+            
+            if (contenedor && typeof modulosData !== "undefined") {
+                contenedor.innerHTML = modulosData.map(mod => `
+                    <div class="card">
+                        <h3>${mod.nombre}</h3>
+                        <p><b>Docente:</b> ${mod.docente}</p>
+                        <p>${mod.resumen}</p>
+                        <p><b>Herramientas:</b> ${mod.herramientas.join(", ")}</p>
+                    </div>
+                `).join("");
+            }
+        });
+    </script>
 </body>
 </html>
