@@ -11,7 +11,7 @@
     <style>
         :root {
             --bg: #030407;
-            --surface: #0a0e17;
+            --surface: rgba(10, 14, 23, 0.85);
             --border: #1a233a;
             --border-glow: #e2e8f0;
             --text: #c2c7d0;
@@ -30,13 +30,27 @@
             font-family: var(--font-sans);
             min-height: 100vh;
             padding: 40px 20px;
-            background-image: 
-                radial-gradient(circle at 50% 0%, rgba(20, 30, 50, 0.2) 0%, transparent 70%);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Canvas de fondo para el efecto Matrix */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.35; /* Sutil para mantener legibilidad */
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1; /* Queda sobre el canvas */
         }
 
         header {
@@ -48,6 +62,8 @@
             align-items: flex-end;
             flex-wrap: wrap;
             gap: 20px;
+            background: rgba(3, 4, 7, 0.6);
+            backdrop-filter: blur(4px);
         }
 
         h1 {
@@ -94,6 +110,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             text-transform: uppercase;
+            backdrop-filter: blur(6px);
         }
 
         .filter-btn:hover, .filter-btn.active {
@@ -118,6 +135,7 @@
             position: relative;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
+            backdrop-filter: blur(8px);
         }
 
         .card::before {
@@ -132,7 +150,7 @@
         .card:hover {
             border-color: var(--border-glow);
             transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
         }
 
         .card:hover::before {
@@ -175,7 +193,7 @@
         .tag {
             font-family: var(--font-mono);
             font-size: 11px;
-            background: #030407;
+            background: rgba(3, 4, 7, 0.9);
             border: 1px solid var(--border);
             padding: 3px 8px;
             color: #94a3b8;
@@ -190,10 +208,15 @@
             font-family: var(--font-mono);
             font-size: 12px;
             color: #475569;
+            background: rgba(3, 4, 7, 0.6);
+            backdrop-filter: blur(4px);
         }
     </style>
 </head>
 <body>
+
+    <!-- Canvas para la lluvia de código Matrix -->
+    <canvas id="matrix-canvas"></canvas>
 
     <div class="container">
         <header>
@@ -201,7 +224,7 @@
                 <h1>Portal de Repaso</h1>
                 <p class="lead">Sistema de Archivos y Módulos Académicos // 3.º DS B</p>
             </div>
-            <div class="badge">SEC // v0.5-FILTERS</div>
+            <div class="badge">SEC // v0.6-MATRIX</div>
         </header>
 
         <!-- Botones de Filtrado por Docente -->
@@ -219,10 +242,11 @@
         </footer>
     </div>
 
-    <!-- Enlazamos los datos y la lógica de filtrado -->
+    <!-- Carga de datos y lógica del portal -->
     <script src="data/modulos.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            // --- LÓGICA DE MÓDULOS Y FILTROS ---
             const contenedor = document.getElementById("lista-modulos");
             const botonesFiltro = document.querySelectorAll(".filter-btn");
             
@@ -245,10 +269,8 @@
                 `).join("");
             }
 
-            // Render inicial al cargar la página
             renderModulos("todos");
 
-            // Eventos para los botones de filtro
             botonesFiltro.forEach(boton => {
                 boton.addEventListener("click", () => {
                     botonesFiltro.forEach(b => b.classList.remove("active"));
@@ -257,6 +279,51 @@
                     renderModulos(filtroSeleccionado);
                 });
             });
+
+            // --- LÓGICA DEL EFECTO MATRIX DE FONDO ---
+            const canvas = document.getElementById("matrix-canvas");
+            const ctx = canvas.getContext("2d");
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener("resize", resizeCanvas);
+
+            const chars = "0123456789ABCDEF<>[]{}/\\;:#$%&*+=-";
+            const fontSize = 14;
+            let columns = Math.floor(canvas.width / fontSize);
+            let drops = Array(columns).fill(1);
+
+            window.addEventListener("resize", () => {
+                columns = Math.floor(canvas.width / fontSize);
+                drops = Array(columns).fill(1);
+            });
+
+            function drawMatrix() {
+                // Relleno sutil para crear el rastro (trail effect)
+                ctx.fillStyle = "rgba(3, 4, 7, 0.08)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = "#38bdf8"; // Tono azul acero ciber-gótico
+                ctx.font = `${fontSize}px 'Syne Mono', monospace`;
+
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                    const x = i * fontSize;
+                    const y = drops[i] * fontSize;
+
+                    ctx.fillText(text, x, y);
+
+                    if (y > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+
+            setInterval(drawMatrix, 35);
         });
     </script>
 </body>
