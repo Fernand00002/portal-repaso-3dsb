@@ -34,7 +34,7 @@
             overflow-x: hidden;
         }
 
-        /* Canvas de fondo para el efecto Matrix */
+        /* Canvas de fondo Matrix */
         #matrix-canvas {
             position: fixed;
             top: 0;
@@ -43,14 +43,14 @@
             height: 100vh;
             z-index: 0;
             pointer-events: none;
-            opacity: 0.35; /* Sutil para mantener legibilidad */
+            opacity: 0.3;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
             position: relative;
-            z-index: 1; /* Queda sobre el canvas */
+            z-index: 1;
         }
 
         header {
@@ -95,7 +95,7 @@
         .filters {
             display: flex;
             gap: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
@@ -119,83 +119,117 @@
             border-color: var(--text-heading);
         }
 
-        /* Grid Dinámico de Módulos */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        /* Tarjeta Gótica Minimalista */
-        .card {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 24px;
+        /* --- RUEDA DE MUNDOS 3D (ESTILO GEOMETRY DASH WORLD) --- */
+        .world-selector-container {
             position: relative;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
-            backdrop-filter: blur(8px);
+            width: 100%;
+            height: 380px;
+            margin: 20px 0 40px;
+            perspective: 1000px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .card::before {
-            content: '';
+        .carousel-wheel {
+            width: 100%;
+            height: 100%;
             position: absolute;
-            top: 0; left: 0; width: 2px; height: 100%;
-            background: var(--text-heading);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        .card:hover {
+        .world-card {
+            position: absolute;
+            width: 280px;
+            height: 320px;
+            left: 50%;
+            top: 50%;
+            margin-left: -140px;
+            margin-top: -160px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .world-card.active-world {
             border-color: var(--border-glow);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 25px rgba(248, 250, 252, 0.2);
         }
 
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card h3 {
-            font-family: var(--font-gothic);
-            font-size: 18px;
-            color: var(--text-heading);
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-            line-height: 1.4;
-        }
-
-        .card .docente {
+        .world-number {
             font-family: var(--font-mono);
             font-size: 11px;
             color: #64748b;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 12px;
-            display: block;
         }
 
-        .card p {
-            font-size: 14px;
-            color: var(--text);
-            line-height: 1.6;
-            margin-bottom: 16px;
-            font-weight: 300;
+        .world-title {
+            font-family: var(--font-gothic);
+            font-size: 16px;
+            color: var(--text-heading);
+            margin: 10px 0;
+            line-height: 1.3;
         }
+
+        .world-desc {
+            font-size: 13px;
+            color: var(--text);
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        .world-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-heading);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            backdrop-filter: blur(8px);
+        }
+
+        .world-nav-btn:hover {
+            background: var(--text-heading);
+            color: var(--bg);
+        }
+
+        .nav-prev { left: 10px; }
+        .nav-next { right: 10px; }
 
         .tags {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .tag {
             font-family: var(--font-mono);
-            font-size: 11px;
+            font-size: 10px;
             background: rgba(3, 4, 7, 0.9);
             border: 1px solid var(--border);
-            padding: 3px 8px;
+            padding: 3px 6px;
             color: #94a3b8;
             border-radius: 2px;
         }
@@ -215,7 +249,6 @@
 </head>
 <body>
 
-    <!-- Canvas para la lluvia de código Matrix -->
     <canvas id="matrix-canvas"></canvas>
 
     <div class="container">
@@ -224,63 +257,110 @@
                 <h1>Portal de Repaso</h1>
                 <p class="lead">Sistema de Archivos y Módulos Académicos // 3.º DS B</p>
             </div>
-            <div class="badge">SEC // v0.6-MATRIX</div>
+            <div class="badge">WORLD // v0.7-GD-3D</div>
         </header>
 
-        <!-- Botones de Filtrado por Docente -->
+        <!-- Filtros por Docente -->
         <div class="filters">
-            <button class="filter-btn active" data-filter="todos">Ver Todos</button>
+            <button class="filter-btn active" data-filter="todos">Todos los Mundos</button>
             <button class="filter-btn" data-filter="Arcides Canales">Arcides Canales</button>
             <button class="filter-btn" data-filter="Javier Mineros">Javier Mineros</button>
         </div>
 
-        <!-- Contenedor dinámico controlado por JavaScript -->
-        <div id="lista-modulos" class="grid"></div>
+        <!-- Rueda 3D de Mundos Estilo GD World -->
+        <div class="world-selector-container">
+            <button class="world-nav-btn nav-prev" id="prevBtn">◀</button>
+            <div class="carousel-wheel" id="wheel"></div>
+            <button class="world-nav-btn nav-next" id="nextBtn">▶</button>
+        </div>
 
         <footer>
             INDEL // DESARROLLO DE SOFTWARE
         </footer>
     </div>
 
-    <!-- Carga de datos y lógica del portal -->
     <script src="data/modulos.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // --- LÓGICA DE MÓDULOS Y FILTROS ---
-            const contenedor = document.getElementById("lista-modulos");
+            const wheel = document.getElementById("wheel");
+            const prevBtn = document.getElementById("prevBtn");
+            const nextBtn = document.getElementById("nextBtn");
             const botonesFiltro = document.querySelectorAll(".filter-btn");
-            
-            function renderModulos(filtro = "todos") {
-                if (!contenedor || typeof modulosData === "undefined") return;
 
-                const modulosFiltrados = filtro === "todos" 
+            let currentDegree = 0;
+            let filteredData = [...modulosData];
+
+            function renderWheel(filter = "todos") {
+                filteredData = filter === "todos" 
                     ? modulosData 
-                    : modulosData.filter(mod => mod.docente === filtro);
+                    : modulosData.filter(m => m.docente === filter);
 
-                contenedor.innerHTML = modulosFiltrados.map(mod => `
-                    <div class="card">
-                        <span class="docente">Docente: ${mod.docente}</span>
-                        <h3>${mod.nombre}</h3>
-                        <p>${mod.resumen}</p>
+                wheel.innerHTML = "";
+                const total = filteredData.length;
+                if (total === 0) return;
+
+                const angleStep = 360 / total;
+                const radius = Math.max(280, total * 45); // Radio responsivo según cantidad de módulos
+
+                filteredData.forEach((mod, index) => {
+                    const angle = index * angleStep;
+                    const card = document.createElement("div");
+                    card.className = "world-card";
+                    card.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
+
+                    card.innerHTML = `
+                        <div>
+                            <span class="world-number">WORLD 0${index + 1} // ${mod.docente}</span>
+                            <h3 class="world-title">${mod.nombre}</h3>
+                            <p class="world-desc">${mod.resumen}</p>
+                        </div>
                         <div class="tags">
                             ${mod.herramientas.map(t => `<span class="tag">${t}</span>`).join('')}
                         </div>
-                    </div>
-                `).join("");
+                    `;
+
+                    wheel.appendChild(card);
+                });
+
+                currentDegree = 0;
+                wheel.style.transform = `rotateY(0deg)`;
             }
 
-            renderModulos("todos");
+            function rotateWheel(direction) {
+                const total = filteredData.length;
+                if (total === 0) return;
+                const angleStep = 360 / total;
 
-            botonesFiltro.forEach(boton => {
-                boton.addEventListener("click", () => {
+                if (direction === "next") {
+                    currentDegree -= angleStep;
+                } else {
+                    currentDegree += angleStep;
+                }
+
+                wheel.style.transform = `rotateY(${currentDegree}deg)`;
+            }
+
+            prevBtn.addEventListener("click", () => rotateWheel("prev"));
+            nextBtn.addEventListener("click", () => rotateWheel("next"));
+
+            // Teclas de flecha izquierda / derecha para girar la rueda
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "ArrowLeft") rotateWheel("prev");
+                if (e.key === "ArrowRight") rotateWheel("next");
+            });
+
+            // Filtros de docente
+            botonesFiltro.forEach(btn => {
+                btn.addEventListener("click", () => {
                     botonesFiltro.forEach(b => b.classList.remove("active"));
-                    boton.classList.add("active");
-                    const filtroSeleccionado = boton.getAttribute("data-filter");
-                    renderModulos(filtroSeleccionado);
+                    btn.classList.add("active");
+                    renderWheel(btn.getAttribute("data-filter"));
                 });
             });
 
-            // --- LÓGICA DEL EFECTO MATRIX DE FONDO ---
+            renderWheel("todos");
+
+            // Matrix Rain Effect
             const canvas = document.getElementById("matrix-canvas");
             const ctx = canvas.getContext("2d");
 
@@ -296,33 +376,21 @@
             let columns = Math.floor(canvas.width / fontSize);
             let drops = Array(columns).fill(1);
 
-            window.addEventListener("resize", () => {
-                columns = Math.floor(canvas.width / fontSize);
-                drops = Array(columns).fill(1);
-            });
-
             function drawMatrix() {
-                // Relleno sutil para crear el rastro (trail effect)
                 ctx.fillStyle = "rgba(3, 4, 7, 0.08)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = "#38bdf8"; // Tono azul acero ciber-gótico
+                ctx.fillStyle = "#38bdf8";
                 ctx.font = `${fontSize}px 'Syne Mono', monospace`;
 
                 for (let i = 0; i < drops.length; i++) {
                     const text = chars.charAt(Math.floor(Math.random() * chars.length));
-                    const x = i * fontSize;
-                    const y = drops[i] * fontSize;
-
-                    ctx.fillText(text, x, y);
-
-                    if (y > canvas.height && Math.random() > 0.975) {
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
                         drops[i] = 0;
                     }
                     drops[i]++;
                 }
             }
-
             setInterval(drawMatrix, 35);
         });
     </script>
