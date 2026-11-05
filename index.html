@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUB // Repaso 3.º DS</title>
+    <title>HUB // Repaso 3.º DS - Epic Inferno Edition</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;850&family=Syne+Mono&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
             --surface: #0a0507;
             --surface-card: rgba(12, 5, 8, 0.95);
             --border: #2a0b12;
-            --border-glow: #ef4444; /* Rojo infernal */
+            --border-glow: #ef4444;
             --text: #d1d5db;
             --text-heading: #fff1f2;
             --accent: #ef4444;
@@ -43,7 +43,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Canvas de Partículas Rojas e Infierno */
         #matrix-canvas {
             position: fixed;
             top: 0;
@@ -86,10 +85,21 @@
             text-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
         }
 
-        .top-controls {
+        .header-right {
             display: flex;
             gap: 10px;
             align-items: center;
+        }
+
+        .badge-epic {
+            font-family: 'Syne Mono', monospace;
+            font-size: 11px;
+            background: #7f1d1d;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid #ef4444;
+            text-transform: uppercase;
         }
 
         .btn-control {
@@ -114,9 +124,14 @@
             gap: 12px;
         }
 
-        .search-input {
+        .search-container {
             flex: 1;
             min-width: 240px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
             background: var(--surface);
             border: 1px solid var(--border);
             padding: 10px 16px;
@@ -126,6 +141,19 @@
             outline: none;
         }
         .search-input:focus { border-color: var(--border-glow); box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
+
+        .search-shortcut {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'Syne Mono', monospace;
+            font-size: 11px;
+            background: var(--border);
+            color: var(--text);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
 
         .filters {
             display: flex;
@@ -144,7 +172,6 @@
             cursor: pointer;
             text-transform: uppercase;
         }
-
         .filter-btn:hover, .filter-btn.active {
             background: var(--text-heading);
             color: var(--bg);
@@ -152,12 +179,39 @@
             box-shadow: 0 0 15px var(--border-glow);
         }
 
-        /* --- SLIDER GÓTICO ROJO/NEGRO --- */
+        /* INSIGNIAS / LOGROS (NIVEL ÉPICO) */
+        .badges-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .badge-item {
+            font-family: 'Syne Mono', monospace;
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px dashed var(--border);
+            color: #64748b;
+        }
+        .badge-item.unlocked {
+            border-color: #22c55e;
+            color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+        }
+
+        /* SLIDER NÍTIDO */
         .slider-wrapper {
             position: relative;
             margin-bottom: 35px;
         }
-
         .slider-container {
             display: flex;
             gap: 20px;
@@ -167,7 +221,6 @@
             scrollbar-width: thin;
             scrollbar-color: var(--border-glow) var(--surface);
         }
-
         .slider-container::-webkit-scrollbar { height: 6px; }
         .slider-container::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 4px; }
 
@@ -182,49 +235,31 @@
             flex-direction: column;
             justify-content: space-between;
             position: relative;
-            cursor: pointer;
             flex-shrink: 0;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
         }
-
         .card:hover {
             border-color: var(--border-glow);
-            transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 0 35px rgba(239, 68, 68, 0.35);
+            transform: translateY(-6px);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
         }
-
-        .card.completed {
-            border-color: #22c55e;
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
-        }
-        .card.completed::after {
-            content: "✓ COMPLETADO";
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-family: 'Syne Mono', monospace;
-            font-size: 10px;
-            color: #22c55e;
-            letter-spacing: 1px;
-        }
+        .card.completed { border-color: #22c55e; }
 
         .world-number {
             font-family: 'Syne Mono', monospace;
             font-size: 11px;
-            color: #991b1b;
+            color: #ef4444;
             letter-spacing: 2px;
             text-transform: uppercase;
         }
-
         .world-title {
             font-family: 'Cinzel', serif;
-            font-size: 16px;
+            font-size: 15px;
             color: var(--text-heading);
             margin: 10px 0;
             line-height: 1.4;
         }
-
         .world-desc {
             font-size: 13px;
             color: var(--text);
@@ -249,15 +284,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.9);
         }
-        .nav-arrow:hover {
-            background: var(--text-heading);
-            color: var(--bg);
-            border-color: var(--text-heading);
-            box-shadow: 0 0 20px var(--border-glow);
-        }
-
+        .nav-arrow:hover { background: var(--text-heading); color: var(--bg); border-color: var(--text-heading); }
         .arrow-left { left: -15px; }
         .arrow-right { right: -15px; }
 
@@ -267,7 +295,6 @@
             gap: 6px;
             margin-bottom: 15px;
         }
-
         .tag {
             font-family: 'Syne Mono', monospace;
             font-size: 10px;
@@ -285,7 +312,6 @@
             border-top: 1px solid var(--border);
             padding-top: 12px;
         }
-
         .checkbox-container {
             display: flex;
             align-items: center;
@@ -297,37 +323,58 @@
         }
         .checkbox-container input { width: 16px; height: 16px; cursor: pointer; accent-color: #ef4444; }
 
-        /* QUIZ INTERACTIVO INFERNAL */
+        /* FLASHCARDS */
+        .flashcard-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 25px;
+            margin-top: 25px;
+            text-align: center;
+        }
+        .flashcard {
+            background: var(--bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 8px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: pointer;
+            margin: 15px 0;
+            font-family: 'Cinzel', serif;
+            font-size: 16px;
+            color: var(--text-heading);
+            box-shadow: inset 0 0 15px rgba(239, 68, 68, 0.1);
+        }
+
+        /* QUIZ */
         .quiz-section {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 6px;
             padding: 25px;
             margin-top: 20px;
-            box-shadow: 0 0 25px rgba(239, 68, 68, 0.1);
         }
-
         .quiz-title {
             font-family: 'Cinzel', serif;
             font-size: 17px;
             color: var(--text-heading);
             margin-bottom: 12px;
         }
-
         .quiz-question {
             font-size: 14px;
             font-weight: 500;
             margin-bottom: 14px;
             color: var(--text-heading);
         }
-
         .quiz-options {
             display: flex;
             flex-direction: column;
             gap: 8px;
             margin-bottom: 12px;
         }
-
         .quiz-option-btn {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -340,7 +387,6 @@
             font-size: 13px;
         }
         .quiz-option-btn:hover { border-color: var(--border-glow); box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
-
         .quiz-feedback {
             font-family: 'Syne Mono', monospace;
             font-size: 13px;
@@ -358,23 +404,36 @@
 </head>
 <body>
 
-    <!-- CANVAS INFERNAL (LLUVIA ROJA + PARTÍCULAS) -->
     <canvas id="matrix-canvas"></canvas>
 
     <div class="container">
         <header>
             <div>
                 <h1>Mi Portal</h1>
-                <p style="font-size: 12px; color: #991b1b; margin-top: 4px;">Tu espacio de aprendizaje tecnológico</p>
+                <p style="font-size: 12px; color: #ef4444; margin-top: 4px;">Nivel Épico</p>
             </div>
-            <div class="top-controls">
+            <div class="header-right">
+                <div class="badge-epic">Épico</div>
                 <button class="btn-control" id="themeToggle">🌓 Modo</button>
             </div>
         </header>
 
-        <!-- Buscador y Filtros -->
+        <!-- INSIGNIAS / LOGROS -->
+        <div class="badges-section">
+            <span style="font-family:'Cinzel'; font-size:13px; color:var(--text-heading);">Logros del Repaso:</span>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <div id="badgeNovice" class="badge-item">⚡ Iniciado del Código (10%)</div>
+                <div id="badgePro" class="badge-item">🔥 Repasador Pro (50%)</div>
+                <div id="badgeMaster" class="badge-item">💀 Maestro (100%)</div>
+            </div>
+        </div>
+
+        <!-- Buscador y Filtros con atajo -->
         <div class="filters-bar">
-            <input type="text" id="searchInput" class="search-input" placeholder="Buscar módulo o tecnología en tiempo real...">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Buscar módulo o tecnología...">
+                <span class="search-shortcut">Presiona /</span>
+            </div>
             <div class="filters">
                 <button class="filter-btn active" data-filter="todos">Todos</button>
                 <button class="filter-btn" data-filter="Arcides Canales">Arcides Canales</button>
@@ -382,11 +441,19 @@
             </div>
         </div>
 
-        <!-- SLIDER NÍTRIDO DINÁMICO -->
+        <!-- SLIDER NÍTIDO -->
         <div class="slider-wrapper">
             <button class="nav-arrow arrow-left" id="scrollLeft">◀</button>
             <div id="modulesContainer" class="slider-container"></div>
             <button class="nav-arrow arrow-right" id="scrollRight">▶</button>
+        </div>
+
+        <!-- FLASHCARDS -->
+        <div class="flashcard-section">
+            <div class="quiz-title">// Flashcards de Repaso Rápido</div>
+            <p style="font-size:12px; color:#ef4444; margin-bottom:5px;">Haz clic en la tarjeta para revelar la respuesta clave</p>
+            <div class="flashcard" id="flashcardBox">Cargando flashcard...</div>
+            <button class="filter-btn" id="nextFlashcard">Siguiente Tarjeta ➜</button>
         </div>
 
         <!-- Quiz Interactivo -->
@@ -398,7 +465,7 @@
         </div>
 
         <footer>
-            INDEL // DESARROLLO DE SOFTWARE // 2026
+            DIEGO PÉREZ // DESARROLLO DE SOFTWARE // 2026
         </footer>
     </div>
 
@@ -415,6 +482,7 @@
             let currentFilter = "todos";
             let searchTerm = "";
 
+            // Modo claro / oscuro
             const savedTheme = localStorage.getItem("portal_theme") || "dark";
             document.documentElement.setAttribute("data-theme", savedTheme);
 
@@ -423,6 +491,14 @@
                 const next = current === "dark" ? "light" : "dark";
                 document.documentElement.setAttribute("data-theme", next);
                 localStorage.setItem("portal_theme", next);
+            });
+
+            // Atajo de teclado '/' para buscar
+            window.addEventListener("keydown", (e) => {
+                if (e.key === "/" && document.activeElement !== searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
             });
 
             scrollLeft.addEventListener("click", () => {
@@ -434,6 +510,12 @@
 
             function getCompletedModules() {
                 return JSON.parse(localStorage.getItem("portal_completed") || "[]");
+            }
+
+            function updateBadges(completedCount, totalCount) {
+                if (completedCount > 0) document.getElementById("badgeNovice").classList.add("unlocked");
+                if (totalCount > 0 && completedCount >= totalCount / 2) document.getElementById("badgePro").classList.add("unlocked");
+                if (totalCount > 0 && completedCount === totalCount) document.getElementById("badgeMaster").classList.add("unlocked");
             }
 
             window.toggleComplete = (id) => {
@@ -460,9 +542,11 @@
                     return matchesFilter && matchesSearch;
                 });
 
+                updateBadges(completedIds.length, modulosData.length);
+
                 container.innerHTML = "";
                 if (filteredData.length === 0) {
-                    container.innerHTML = `<p style="text-align:center; padding: 40px; font-family:'Syne Mono'; color:#7f1d1d; width:100%;">No se encontraron módulos con esos criterios.</p>`;
+                    container.innerHTML = `<p style="text-align:center; padding: 40px; font-family:'Syne Mono'; color:#ef4444; width:100%;">No se encontraron módulos con esos criterios.</p>`;
                     return;
                 }
 
@@ -509,7 +593,36 @@
 
             renderModules();
 
-            // Quiz Interactivo
+            // Flashcards
+            const flashcardsData = [
+                { q: "¿Qué significa SLA en el mantenimiento de sistemas?", a: "Acuerdo de Nivel de Servicio (Service Level Agreement)." },
+                { q: "¿Para qué sirve el modelado UML?", a: "Para diseñar la estructura, comportamiento y arquitectura del software." },
+                { q: "¿Cuál es la función de una base de datos relacional?", a: "Organizar datos en tablas relacionadas mediante filas y columnas." },
+                { q: "¿Qué ventaja ofrece .NET MAUI en desarrollo móvil?", a: "Permite crear interfaces multiplataforma con un solo código base en XAML y C#." }
+            ];
+            let currentFlashcard = 0;
+            let showAnswer = false;
+            const flashcardBox = document.getElementById("flashcardBox");
+            const nextFlashcardBtn = document.getElementById("nextFlashcard");
+
+            function updateFlashcard() {
+                flashcardBox.textContent = showAnswer ? flashcardsData[currentFlashcard].a : flashcardsData[currentFlashcard].q;
+                flashcardBox.style.color = showAnswer ? "#34d399" : "var(--text-heading)";
+            }
+
+            flashcardBox.addEventListener("click", () => {
+                showAnswer = !showAnswer;
+                updateFlashcard();
+            });
+
+            nextFlashcardBtn.addEventListener("click", () => {
+                currentFlashcard = (currentFlashcard + 1) % flashcardsData.length;
+                showAnswer = false;
+                updateFlashcard();
+            });
+            updateFlashcard();
+
+            // Quiz
             const quizData = [
                 {
                     pregunta: "¿Qué componente define un acuerdo de nivel de servicio y tiempos de respuesta?",
@@ -562,7 +675,7 @@
 
             loadQuiz();
 
-            // --- LLUVIA DE CÓDIGO ROJA + PARTÍCULAS INFERNALES ---
+            // Matrix Rain Rojo / Partículas
             const canvas = document.getElementById("matrix-canvas");
             const ctx = canvas.getContext("2d");
 
@@ -603,7 +716,6 @@
                 ctx.fillStyle = "rgba(2, 2, 4, 0.12)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Lluvia roja sangrienta
                 ctx.fillStyle = "#ef4444";
                 ctx.font = `${fontSize}px 'Syne Mono', monospace`;
                 for (let i = 0; i < drops.length; i++) {
@@ -615,7 +727,6 @@
                     drops[i]++;
                 }
 
-                // Partículas rojas interactivas con el mouse
                 particlesArray.forEach(p => {
                     p.x += p.speedX;
                     p.y += p.speedY;
