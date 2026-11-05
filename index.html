@@ -179,7 +179,7 @@
             box-shadow: 0 0 15px var(--border-glow);
         }
 
-        /* INSIGNIAS / LOGROS (NIVEL ÉPICO) */
+        /* LOGROS */
         .badges-section {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -207,44 +207,87 @@
             box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
         }
 
-        /* SLIDER NÍTIDO */
+        /* SLIDER 3D TILT LLAMATIVO */
         .slider-wrapper {
             position: relative;
             margin-bottom: 35px;
+            perspective: 1200px;
         }
         .slider-container {
             display: flex;
-            gap: 20px;
+            gap: 24px;
             overflow-x: auto;
             scroll-behavior: smooth;
-            padding: 15px 5px;
+            padding: 30px 10px;
             scrollbar-width: thin;
             scrollbar-color: var(--border-glow) var(--surface);
+            transform-style: preserve-3d;
         }
         .slider-container::-webkit-scrollbar { height: 6px; }
         .slider-container::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 4px; }
 
+        @keyframes card3DEntrance {
+            0% { opacity: 0; transform: perspective(1000px) rotateX(-35deg) rotateY(25deg) translateZ(-150px) scale(0.7); }
+            100% { opacity: 1; transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0) scale(1); }
+        }
+
+        @keyframes borderGlowPulse {
+            0% { border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+            50% { border-color: rgba(239, 68, 68, 1); box-shadow: 0 0 30px rgba(239, 68, 68, 0.6), inset 0 0 15px rgba(239, 68, 68, 0.3); }
+            100% { border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+        }
+
         .card {
             min-width: 310px;
             max-width: 320px;
-            background: var(--surface-card);
-            border: 1px solid var(--border);
-            border-radius: 6px;
+            background: linear-gradient(135deg, rgba(18, 7, 12, 0.98), rgba(5, 2, 4, 0.98));
+            border: 2px solid var(--border-glow);
+            border-radius: 12px;
             padding: 24px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
             flex-shrink: 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
+            animation: card3DEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards, borderGlowPulse 4s infinite ease-in-out;
+            transform-style: preserve-3d;
+            will-change: transform;
+            transition: transform 0.15s ease-out, box-shadow 0.3s, border-color 0.3s;
+            overflow: hidden;
         }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .card:hover::before { opacity: 1; }
+
         .card:hover {
-            border-color: var(--border-glow);
-            transform: translateY(-6px);
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+            border-color: #ff2a2a;
+            box-shadow: 0 20px 45px rgba(239, 68, 68, 0.6), 0 0 25px rgba(239, 68, 68, 0.4), inset 0 0 20px rgba(239, 68, 68, 0.25);
         }
-        .card.completed { border-color: #22c55e; }
+
+        .card.completed { 
+            border-color: #22c55e;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .card-inner {
+            transform: translateZ(30px);
+            transform-style: preserve-3d;
+            position: relative;
+            z-index: 2;
+        }
 
         .world-number {
             font-family: 'Syne Mono', monospace;
@@ -294,6 +337,9 @@
             flex-wrap: wrap;
             gap: 6px;
             margin-bottom: 15px;
+            transform: translateZ(20px);
+            position: relative;
+            z-index: 2;
         }
         .tag {
             font-family: 'Syne Mono', monospace;
@@ -311,6 +357,9 @@
             align-items: center;
             border-top: 1px solid var(--border);
             padding-top: 12px;
+            transform: translateZ(15px);
+            position: relative;
+            z-index: 2;
         }
         .checkbox-container {
             display: flex;
@@ -347,7 +396,9 @@
             font-size: 16px;
             color: var(--text-heading);
             box-shadow: inset 0 0 15px rgba(239, 68, 68, 0.1);
+            transition: transform 0.2s ease;
         }
+        .flashcard:hover { transform: scale(1.01); }
 
         /* QUIZ */
         .quiz-section {
@@ -441,7 +492,7 @@
             </div>
         </div>
 
-        <!-- SLIDER NÍTIDO -->
+        <!-- SLIDER NÍTIDO 3D -->
         <div class="slider-wrapper">
             <button class="nav-arrow arrow-left" id="scrollLeft">◀</button>
             <div id="modulesContainer" class="slider-container"></div>
@@ -529,6 +580,28 @@
                 renderModules();
             };
 
+            // EFECTO 3D TILT INTERACTIVO
+            function apply3DTilt() {
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(card => {
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const rotateX = ((y - centerY) / centerY) * -25;
+                        const rotateY = ((x - centerX) / centerX) * 25;
+
+                        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(30px) scale(1.05)`;
+                    });
+
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px) scale(1)`;
+                    });
+                });
+            }
+
             function renderModules() {
                 if (typeof modulosData === "undefined") return;
                 const completedIds = getCompletedModules();
@@ -556,7 +629,7 @@
                     card.className = `card ${isDone ? 'completed' : ''}`;
 
                     card.innerHTML = `
-                        <div>
+                        <div class="card-inner">
                             <span class="world-number">DOCENTE: ${mod.docente}</span>
                             <h3 class="world-title">${mod.nombre}</h3>
                             <p class="world-desc">${mod.resumen}</p>
@@ -575,6 +648,8 @@
                     `;
                     container.appendChild(card);
                 });
+
+                apply3DTilt();
             }
 
             searchInput.addEventListener("input", (e) => {
@@ -622,7 +697,7 @@
             });
             updateFlashcard();
 
-            // Quiz
+            // Quiz ampliado con más preguntas técnicas
             const quizData = [
                 {
                     pregunta: "¿Qué componente define un acuerdo de nivel de servicio y tiempos de respuesta?",
@@ -638,6 +713,16 @@
                     pregunta: "¿Qué herramienta se utiliza para modelar estructuras de software y diagramas?",
                     opciones: ["UML", "Excel básico", "XAMPP local"],
                     correcta: 0
+                },
+                {
+                    pregunta: "¿Qué lenguaje y framework se utiliza principalmente para aplicaciones móviles nativas multiplataforma en el módulo de Arcides?",
+                    opciones: ["XAML y .NET MAUI", "Python y Streamlit", "HTML y CSS plano"],
+                    correcta: 0
+                },
+                {
+                    pregunta: "¿Cuál es una función clave en la administración de bases de datos avanzadas?",
+                    opciones: ["Optimización de consultas y control de accesos", "Crear animaciones CSS en el cliente", "Diseñar logotipos institucionales"],
+                    correcta: 0
                 }
             ];
 
@@ -648,7 +733,7 @@
 
             function loadQuiz() {
                 const q = quizData[currentQuizIndex];
-                questionEl.textContent = `Pregunta ${currentQuizIndex + 1}: ${q.pregunta}`;
+                questionEl.textContent = `Pregunta ${currentQuizIndex + 1} de ${quizData.length}: ${q.pregunta}`;
                 optionsEl.innerHTML = "";
                 feedbackEl.textContent = "";
 
